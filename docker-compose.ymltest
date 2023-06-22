@@ -1,0 +1,52 @@
+version: "3.9"
+services:
+  db:
+    image: mariadb:latest
+    volumes:
+      - ./db_data:/var/lib/mysql
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: wordpress
+      MYSQL_USER: wordpress
+      MYSQL_PASSWORD: wordpress
+      MARIADB_ROOT_PASSWORD: wordpress
+    ports:
+      - "3308:3310"
+    networks:
+      - wordpress_demo
+
+  adminer:
+    image: adminer
+    restart: always
+    ports:
+      - "8002:8080"
+    depends_on:
+      - db
+    networks:
+      - wordpress_demo
+
+  wordpress:
+    image: wordpress:latest
+    volumes:
+      - ./wordpress:/var/www/html
+    restart: always
+    environment:
+      WORDPRESS_DB_HOST: db:3308
+      WORDPRESS_DB_USER: wordpress
+      WORDPRESS_DB_PASSWORD: wordpress
+      WORDPRESS_DB_NAME: wordpress
+    ports:
+      - "8005:80"
+    depends_on:
+      - db
+    networks:
+      - wordpress_demo
+
+networks:
+  wordpress_demo:
+    driver: bridge
+volumes:
+  db_data:
+  phpmyadmin_data:
+  wordpress_data:
